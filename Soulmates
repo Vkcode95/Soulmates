@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soulmates – Community Chat (Lite)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1020;
+      --card: #0f172a;
+      --border: rgba(148, 163, 184, 0.3);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.12);
+      --danger: #f97373;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 22px 60px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 52%, #000 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1100px;
+      min-height: 80vh;
+      max-height: 96vh;
+      background: linear-gradient(135deg, #020617, #020617, #020617);
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* LEFT SIDEBAR (BRAND + INFO) – HIDDEN ON SMALL SCREENS */
+
+    .sidebar {
+      width: 32%;
+      background: radial-gradient(circle at top left, #22c55e22, transparent 55%), #020617;
+      border-right: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 20px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(34, 197, 94, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+    }
+
+    .brand-text-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .brand-text-sub {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.16), rgba(15, 23, 42, 0.98));
+      padding: 14px 14px 12px;
+      font-size: 0.86rem;
+    }
+
+    .sidebar-card p {
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+    }
+
+    .note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      opacity: 0.9;
+    }
+
+    .note strong {
+      color: var(--accent);
+    }
+
+    /* MAIN AREA: LOGIN + CHAT */
+
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top right, #22c55e18, transparent 60%), #020617;
+    }
+
+    .top-bar {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(to right, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.9));
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-app-name {
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+
+    .avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #020617;
+    }
+
+    .logout-btn {
+      border: none;
+      outline: none;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
+
+    /* AUTH / LOGIN SCREEN */
+
+    .auth-screen {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 380px;
+      border-radius: 22px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top, rgba(34, 197, 94, 0.16), rgba(15, 23, 42, 0.98));
+      padding: 22px 20px 18px;
+      text-align: left;
+    }
+
+    .auth-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.35rem;
+      margin-bottom: 6px;
+    }
+
+    .auth-sub {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .field {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .field::placeholder {
+      color: #6b7280;
+    }
+
+    .auth-btn {
+      margin-top: 12px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(22, 163, 74, 0.55);
+    }
+
+    .auth-note {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .auth-note strong {
+      color: var(--accent);
+    }
+
+    /* CHAT AREA */
+
+    .chat-screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .chat-wrapper {
+      flex: 1;
+      padding: 14px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.8) transparent;
+    }
+
+    .chat-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.7);
+      border-radius: 999px;
+    }
+
+    .day-divider {
+      align-self: center;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.9);
+      margin-bottom: 5px;
+    }
+
+    .msg-row {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .msg-row.me {
+      justify-content: flex-end;
+    }
+
+    .msg-bubble {
+      max-width: 75%;
+      padding: 7px 10px 6px;
+      border-radius: 14px;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      position: relative;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-me {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg-them {
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      border-bottom-left-radius: 2px;
+      color: var(--text-main);
+    }
+
+    .msg-meta {
+      font-size: 0.65rem;
+      margin-top: 2px;
+      opacity: 0.8;
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+
+    .msg-row.them .msg-meta {
+      justify-content: flex-start;
+      color: var(--text-muted);
+    }
+
+    .system-note {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    /* INPUT AREA */
+
+    .input-bar {
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
+    }
+
+    .circle-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .circle-btn.highlight {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .circle-btn.disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .msg-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      background: rgba(15, 23, 42, 0.94);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .msg-input::placeholder {
+      color: #6b7280;
+    }
+
+    .send-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .send-btn span {
+      font-size: 0.9rem;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+
+      .app-shell {
+        border-radius: 16px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 8px;
+      }
+
+      .top-bar {
+        padding-inline: 10px;
+      }
+
+      .msg-bubble {
+        max-width: 85%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- LEFT INFO / BRAND PANEL -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand-block">
+          <div class="brand-logo">S</div>
+          <div>
+            <div class="brand-text-main">Soulmates</div>
+            <div class="brand-text-sub">Calm community space</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">About Soulmates</div>
+        <div class="sidebar-card">
+          <div class="pill">
+            <span class="dot"></span>
+            <span>Community • Lite</span>
+          </div>
+          <p>
+            A WhatsApp-lite style experience for calm, meaningful conversations.
+            This early version runs entirely in your browser as a static demo.
+          </p>
+          <div class="tag-list">
+            <span class="tag">Text chat</span>
+            <span class="tag">Audio / video UI</span>
+            <span class="tag">File share buttons</span>
+            <span class="tag">No install</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">Roadmap (Next)</div>
+        <div class="sidebar-card">
+          <p><strong>Planned upgrades:</strong></p>
+          <p>
+            • Real user accounts (via Firebase or similar)<br>
+            • Live multi-user chat<br>
+            • Actual audio / video calls<br>
+            • Cloud file sharing
+          </p>
+        </div>
+      </div>
+
+      <p class="note">
+        This version is a <strong>static prototype</strong> hosted on GitHub Pages.  
+        Perfect for design, UX and future integration with real-time services.
+      </p>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="main-area">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-left">
+          <div class="top-app-name">Soulmates Community</div>
+          <span class="status-pill">
+            <span class="dot"></span> Prototype • Static
+          </span>
+        </div>
+
+        <div class="user-info" id="userInfo" style="display:none;">
+          <div class="avatar" id="userAvatar">S</div>
+          <div id="userNameLabel">@guest</div>
+          <button class="logout-btn" id="logoutBtn">Sign out</button>
+        </div>
+      </header>
+
+      <!-- AUTH SCREEN -->
+      <section class="auth-screen" id="authScreen">
+        <div class="auth-card">
+          <h1 class="auth-title">Sign in to Soulmates</h1>
+          <p class="auth-sub">
+            This is a <strong>client-side demo</strong>. Your name is stored only in this device for now.
+          </p>
+
+          <label class="field-label" for="displayName">Your display name</label>
+          <input
+            id="displayName"
+            class="field"
+            type="text"
+            placeholder="Example: CosmicEngineer" />
+
+          <label class="field-label" for="statusLine" style="margin-top:10px;">Short status (optional)</label>
+          <input
+            id="statusLine"
+            class="field"
+            type="text"
+            placeholder="Calm • Focused • Building the future" />
+
+          <button class="auth-btn" id="loginBtn">Sign in</button>
+
+          <p class="auth-note">
+            In future versions, this screen will connect to
+            <strong>real authentication</strong> (email/phone, OTP, etc.).
+          </p>
+        </div>
+      </section>
+
+      <!-- CHAT SCREEN -->
+      <section class="chat-screen" id="chatScreen">
+        <div class="chat-wrapper" id="chatWrapper">
+          <div class="day-divider">Today</div>
+          <div class="system-note">
+            You’re chatting in the <strong>Soulmates prototype</strong>.
+            Messages live only in this browser for now.
+          </div>
+        </div>
+
+        <div class="input-bar">
+          <button class="circle-btn disabled" id="attachBtn" title="Send files (coming soon)">📎</button>
+          <button class="circle-btn disabled" id="audioBtn" title="Audio call (coming soon)">📞</button>
+          <button class="circle-btn disabled" id="videoBtn" title="Video call (coming soon)">🎥</button>
+
+          <input
+            type="text"
+            class="msg-input"
+            id="msgInput"
+            placeholder="Type a message to the community prototype..." />
+
+          <button class="send-btn" id="sendBtn">
+            <span>Send</span> ➤
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Simple JS for login + local chat prototype
+
+    const authScreen = document.getElementById('authScreen');
+    const chatScreen = document.getElementById('chatScreen');
+    const userInfo = document.getElementById('userInfo');
+    const userNameLabel = document.getElementById('userNameLabel');
+    const userAvatar = document.getElementById('userAvatar');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const displayNameInput = document.getElementById('displayName');
+    const statusLineInput = document.getElementById('statusLine');
+
+    const chatWrapper = document.getElementById('chatWrapper');
+    const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    const attachBtn = document.getElementById('attachBtn');
+    const audioBtn = document.getElementById('audioBtn');
+    const videoBtn = document.getElementById('videoBtn');
+
+    function formatTime(date) {
+      const h = date.getHours();
+      const m = date.getMinutes().toString().padStart(2, '0');
+      const hour12 = (h % 12) || 12;
+      const ampm = h < 12 ? 'AM' : 'PM';
+      return `${hour12}:${m} ${ampm}`;
+    }
+
+    function addMessage({ text, from = 'me' }) {
+      const row = document.createElement('div');
+      row.className = 'msg-row ' + (from === 'me' ? 'me' : 'them');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble ' + (from === 'me' ? 'msg-me' : 'msg-them');
+      bubble.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = formatTime(new Date());
+
+      bubble.appendChild(meta);
+      row.appendChild(bubble);
+      chatWrapper.appendChild(row);
+      chatWrapper.scrollTop = chatWrapper.scrollHeight;
+    }
+
+    function showPrototypeButtonsInfo(type) {
+      let message = '';
+      if (type === 'attach') {
+        message = 'File sending will be powered by cloud storage in a future version.';
+      } else if (type === 'audio') {
+        message = 'Audio calls will use WebRTC / call APIs in a future release.';
+      } else if (type === 'video') {
+        message = 'Video calls will be enabled once real-time signalling is connected.';
+      }
+      alert('Coming soon:\n\n' + message);
+    }
+
+    attachBtn.addEventListener('click', () => showPrototypeButtonsInfo('attach'));
+    audioBtn.addEventListener('click', () => showPrototypeButtonsInfo('audio'));
+    videoBtn.addEventListener('click', () => showPrototypeButtonsInfo('video'));
+
+    // LOGIN / LOGOUT
+
+    function updateUserUI(name) {
+      userNameLabel.textContent = '@' + name;
+      userAvatar.textContent = name.charAt(0).toUpperCase() || 'S';
+    }
+
+    function signIn(name) {
+      localStorage.setItem('soulmatesUser', name);
+      authScreen.style.display = 'none';
+      chatScreen.style.display = 'flex';
+      userInfo.style.display = 'flex';
+      updateUserUI(name);
+
+      // Welcome messages
+      addMessage({
+        from: 'them',
+        text: `Welcome, ${name}. This is the Soulmates community prototype.`
+      });
+      addMessage({
+        from: 'them',
+        text: 'In a future version, this space will connect you with real people in real time.'
+      });
+    }
+
+    function signOut() {
+      localStorage.removeItem('soulmatesUser');
+      authScreen.style.display = 'flex';
+      chatScreen.style.display = 'none';
+      userInfo.style.display = 'none';
+      // Clear chat except first system elements
+      while (chatWrapper.children.length > 2) {
+        chatWrapper.removeChild(chatWrapper.lastChild);
+      }
+    }
+
+    loginBtn.addEventListener('click', () => {
+      const name = displayNameInput.value.trim() || 'guest';
+      signIn(name);
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      signOut();
+    });
+
+    // Restore session if exists
+    const savedUser = localStorage.getItem('soulmatesUser');
+    if (savedUser) {
+      authScreen.style.display = 'none';
+      chatScreen.style.display = 'flex';
+      userInfo.style.display = 'flex';
+      updateUserUI(savedUser);
+    }
+
+    // MESSAGE SENDING
+
+    function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      addMessage({ text, from: 'me' });
+      msgInput.value = '';
+
+      // Tiny auto-reply to make it feel alive
+      setTimeout(() => {
+        addMessage({
+          from: 'them',
+          text: 'Soulmates prototype received: “' + text + '”'
+        });
+      }, 700);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
+initial_commit
